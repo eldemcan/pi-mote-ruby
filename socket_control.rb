@@ -1,6 +1,6 @@
 require 'pi_piper'
 
-class Energenie
+class PiMote
   include PiPiper
 
   ON_SIGNALS = {
