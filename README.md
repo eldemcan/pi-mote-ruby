@@ -1,5 +1,5 @@
 # Pi Mote ruby
-Energenie Pi-mote ruby api for Raspberry Pi. 
+Energenie [Pi-mote](https://energenie4u.co.uk/catalogue/product/ENER002-2PI) ruby api for Raspberry Pi. 
 # Dependency 
 You need to install [pi piper](https://github.com/jwhitehorn/pi_piper) library. 
 
