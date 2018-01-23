@@ -4,27 +4,30 @@ class PiMote
   include PiPiper
 
   ON_SIGNALS = {
-    0 => %i[on on off on],
-    1 => %i[on on on on],
-    2 => %i[off on on on],
-    3 => %i[on off on on],
-    4 => %i[off off on on]
+    0 => %i(on on off on),
+    1 => %i(on on on on),
+    2 => %i(off on on on),
+    3 => %i(on off on on),
+    4 => %i(off off on on)
   }.freeze
 
   OFF_SIGNALS = {
-    0 => %i[on on off off],
-    1 => %i[on on on off],
-    2 => %i[off on on off],
-    3 => %i[on off on off],
-    4 => %i[off off on off]
+    0 => %i(on on off off),
+    1 => %i(on on on off),
+    2 => %i(off on on off),
+    3 => %i(on off on off),
+    4 => %i(off off on off)
   }.freeze
 
-  def initialize
-    setup_pins
-  end
-
   # Pin numbers in this method comes from energenie manual
-  def setup_pins
+  def initialize(opt)
+    default_opt = {
+      signal_pins: [17, 22, 23, 27],
+      on_pin: 24,
+      off_pin: 25
+    }
+
+    default_opt.merge(opt) if defined? opt
     @signal_pins = [17, 22, 23, 27].map do |pin|
       PiPiper::Pin.new(pin: pin, direction: :out)
     end
