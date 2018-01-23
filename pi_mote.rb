@@ -20,20 +20,20 @@ class PiMote
   }.freeze
 
   # Pin numbers in this method comes from energenie manual
-  def initialize(opt)
-    default_opt = {
+  def initialize(given_opt)
+    opt = {
       signal_pins: [17, 22, 23, 27],
       on_pin: 24,
       off_pin: 25
     }
 
-    default_opt.merge(opt) if defined? opt
-    @signal_pins = [17, 22, 23, 27].map do |pin|
+    opt.merge(opt) if defined? given_opt
+    @signal_pins = opt[:signal_pins].map do |pin|
       PiPiper::Pin.new(pin: pin, direction: :out)
     end
 
-    @on_off_pin = PiPiper::Pin.new(pin: 24, direction: :out)
-    @enable_pin = PiPiper::Pin.new(pin: 25, direction: :out)
+    @on_off_pin = PiPiper::Pin.new(pin: opt[:on_pin], direction: :out)
+    @enable_pin = PiPiper::Pin.new(pin: opt[:off_pin], direction: :out)
 
     @on_off_pin.off
     @enable_pin.off
