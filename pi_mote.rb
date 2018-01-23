@@ -20,7 +20,7 @@ class PiMote
   }.freeze
 
   # Pin numbers in this method comes from energenie manual
-  def initialize(given_opt)
+  def initialize(given_opt = {})
     opt = {
       signal_pins: [17, 22, 23, 27],
       on_pin: 24,
