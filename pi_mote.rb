@@ -24,11 +24,11 @@ class PiMote
       signal_pins: [17, 22, 23, 27],
       on_off_pin: 24,
       enable_pin: 25,
-      board_number: :bcm
+      board_numbering: :bcm
     }
 
     @opt.merge(given_opt) if defined? given_opt
-    RPi::GPIO.set_numbering @opt[:board_number]
+    RPi::GPIO.set_numbering @opt[:board_numbering]
 
     @opt[:signal_pins].map do |pin|
       RPi::GPIO.setup pin, as: :output, initialize: :low
