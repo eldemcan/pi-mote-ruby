@@ -1,53 +1,51 @@
-require 'pi_piper'
+require 'rpi_gpio'
 
 class PiMote
-  include PiPiper
 
   ON_SIGNALS = {
-    0 => %i(on on off on),
-    1 => %i(on on on on),
-    2 => %i(off on on on),
-    3 => %i(on off on on),
-    4 => %i(off off on on)
+    0 => %w(high high low high),
+    1 => %w(high high high high),
+    2 => %w(low high high high),
+    3 => %w(high low high high),
+    4 => %w(low low high high)
   }.freeze
 
   OFF_SIGNALS = {
-    0 => %i(on on off off),
-    1 => %i(on on on off),
-    2 => %i(off on on off),
-    3 => %i(on off on off),
-    4 => %i(off off on off)
+    0 => %w(high high low low),
+    1 => %w(high high high low),
+    2 => %w(low high high low),
+    3 => %w(high low high low),
+    4 => %w(low low high low)
   }.freeze
 
   # Pin numbers in this method comes from energenie manual
   def initialize(given_opt = {})
-    opt = {
+    @opt = {
       signal_pins: [17, 22, 23, 27],
-      on_pin: 24,
-      off_pin: 25
+      on_off_pin: 24,
+      enable_pin: 25,
+      board_number: :bcm
     }
 
-    opt.merge(opt) if defined? given_opt
-    @signal_pins = opt[:signal_pins].map do |pin|
-      PiPiper::Pin.new(pin: pin, direction: :out)
+    @opt.merge(given_opt) if defined? given_opt
+    RPi::GPIO.set_numbering @opt[:board_number]
+
+    @opt[:signal_pins].map do |pin|
+      RPi::GPIO.setup pin, as: :output, initialize: :low
     end
-
-    @on_off_pin = PiPiper::Pin.new(pin: opt[:on_pin], direction: :out)
-    @enable_pin = PiPiper::Pin.new(pin: opt[:off_pin], direction: :out)
-
-    @on_off_pin.off
-    @enable_pin.off
-
-    @signal_pins.map(&:off)
+    RPi::GPIO.setup @opt[:on_off_pin], as: :output, initialize: :low
+    RPi::GPIO.setup @opt[:enable_pin], as: :output, initialize: :low
   end
 
   def change_plug_state(socket, signals_hash)
     socket_signals = signals_hash[socket]
-    @signal_pins.zip(socket_signals).each { |pin, signal| pin.send(signal) }
+    @opt[:signal_pins].zip(socket_signals).each do |pin, signal|
+      RPi::GPIO.send("set_#{signal}", pin)
+    end
     sleep(0.1)
-    @enable_pin.on
+    RPi::GPIO.set_high @opt[:enable_pin]
     sleep(0.25)
-    @enable_pin.off
+    RPi::GPIO.set_low @opt[:enable_pin]
   end
 
   def switch_on(socket = 0)
@@ -56,5 +54,11 @@ class PiMote
 
   def switch_off(socket = 0)
     change_plug_state(socket, OFF_SIGNALS)
+  end
+
+  def cleanup
+    @opt[:signal_pins].each { |pin| RPi::GPIO.clean_up pin }
+    RPi::GPIO.clean_up @opt[:enable_pin]
+    RPi::GPIO.clean_up @opt[:on_off_pin]
   end
 end
