@@ -27,7 +27,7 @@ class PiMote
       board_numbering: :bcm
     }
 
-    @opt.merge(given_opt) if defined? given_opt
+    @opt = @opt.merge(given_opt) if defined? given_opt
     RPi::GPIO.set_numbering @opt[:board_numbering]
 
     @opt[:signal_pins].map do |pin|
