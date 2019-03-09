@@ -1,5 +1,5 @@
 require 'rpi_gpio'
-
+require 'pi_mote/version'
 class PiMote
 
   ON_SIGNALS = {
