@@ -26,7 +26,7 @@ sudo chmod g+rw /dev/gpiomem` chmod one will give write permissions.
 # Usage
 
 ```ruby
-sc = PiMote.new
+sc = PiMote::Sockets.new
 sc.switch_on(socket_number)
 sc.switch_off(socket_number)
 
